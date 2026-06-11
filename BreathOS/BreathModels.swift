@@ -48,6 +48,27 @@ struct BreathSettings: Codable, Equatable {
     var holdOutByRound: [Double] = [60, 90, 120, 150, 180] // length == rounds
     var soundEnabled: Bool = true
     var hapticsEnabled: Bool = true
+    var breathVolume: Double = Double(AudioConfig.breathVolume)          // 0...1, dev default
+    var musicVolume: Double = Double(AudioConfig.backgroundMusicVolume)  // 0...1, dev default
+
+    init() {}
+
+    /// Tolerant decoding: missing keys fall back to defaults, so adding new
+    /// settings never wipes previously saved ones.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = BreathSettings()
+        inhaleSec       = try c.decodeIfPresent(Double.self,   forKey: .inhaleSec)       ?? d.inhaleSec
+        exhaleSec       = try c.decodeIfPresent(Double.self,   forKey: .exhaleSec)       ?? d.exhaleSec
+        breathsPerRound = try c.decodeIfPresent(Int.self,      forKey: .breathsPerRound) ?? d.breathsPerRound
+        recoveryHoldSec = try c.decodeIfPresent(Double.self,   forKey: .recoveryHoldSec) ?? d.recoveryHoldSec
+        rounds          = try c.decodeIfPresent(Int.self,      forKey: .rounds)          ?? d.rounds
+        holdOutByRound  = try c.decodeIfPresent([Double].self, forKey: .holdOutByRound)  ?? d.holdOutByRound
+        soundEnabled    = try c.decodeIfPresent(Bool.self,     forKey: .soundEnabled)    ?? d.soundEnabled
+        hapticsEnabled  = try c.decodeIfPresent(Bool.self,     forKey: .hapticsEnabled)  ?? d.hapticsEnabled
+        breathVolume    = try c.decodeIfPresent(Double.self,   forKey: .breathVolume)    ?? d.breathVolume
+        musicVolume     = try c.decodeIfPresent(Double.self,   forKey: .musicVolume)     ?? d.musicVolume
+    }
 
     // MARK: Constants / ranges
 
@@ -92,6 +113,8 @@ struct BreathSettings: Codable, Equatable {
         copy.rounds = min(max(rounds, BreathSettings.roundsRange.lowerBound), BreathSettings.roundsRange.upperBound)
         copy.breathsPerRound = min(max(breathsPerRound, BreathSettings.breathsRange.lowerBound), BreathSettings.breathsRange.upperBound)
         copy.holdOutByRound = BreathSettings.adjustedHoldOut(holdOutByRound, to: copy.rounds)
+        copy.breathVolume = min(max(breathVolume, 0), 1)
+        copy.musicVolume = min(max(musicVolume, 0), 1)
         return copy
     }
 

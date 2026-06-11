@@ -37,6 +37,7 @@
 		BB000000000000000000000B /* exhale.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = exhale.mp3; sourceTree = "<group>"; };
 		BB000000000000000000000C /* bg_music_start_from_45sec.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bg_music_start_from_45sec.mp3; sourceTree = "<group>"; };
 		BB000000000000000000000D /* exhale_long.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = exhale_long.mp3; sourceTree = "<group>"; };
+		BB000000000000000000000E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +79,7 @@
 				BB0000000000000000000007 /* BreathShaderView.swift */,
 				BB0000000000000000000008 /* Breath.metal */,
 				BB0000000000000000000009 /* Assets.xcassets */,
+				BB000000000000000000000E /* Info.plist */,
 				AA0000000000000000000005 /* Resources */,
 			);
 			path = BreathOS;
@@ -311,10 +313,10 @@
 				DEVELOPMENT_TEAM = 69N3AY56L6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = BreathOS;
+				INFOPLIST_FILE = BreathOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BreathUpp;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -339,10 +341,10 @@
 				DEVELOPMENT_TEAM = 69N3AY56L6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = BreathOS;
+				INFOPLIST_FILE = BreathOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BreathUpp;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

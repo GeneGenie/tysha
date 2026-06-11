@@ -14,5 +14,9 @@ enum AudioConfig {
     static let backgroundMusicStartSec: TimeInterval = 90
 
     /// 0...1. Kept low so phase cues stay in front.
-    static let backgroundMusicVolume: Float = 0.25
+    static let backgroundMusicVolume: Float = 0.55
+
+    /// 0...1. Breathing-cue volume (inhale/exhale clips). Kept below full
+    /// so the music bed stays audible underneath.
+    static let breathVolume: Float = 0.4
 }

@@ -37,12 +37,13 @@ private final class DisplayLinkProxy: NSObject {
 private final class HapticManager {
     private let heavy  = UIImpactFeedbackGenerator(style: .heavy)
     private let soft   = UIImpactFeedbackGenerator(style: .medium)
+    private let light  = UIImpactFeedbackGenerator(style: .light)
     private let notify = UINotificationFeedbackGenerator()
     var enabled = true
 
     func prepare() {
         guard enabled else { return }
-        heavy.prepare(); soft.prepare(); notify.prepare()
+        heavy.prepare(); soft.prepare(); light.prepare(); notify.prepare()
     }
 
     /// Fired on every phase change.
@@ -57,6 +58,27 @@ private final class HapticManager {
         guard enabled else { return }
         soft.impactOccurred()
         soft.prepare()
+    }
+
+    /// Four medium taps — the 15-second marker during the long hold.
+    func holdMarker() {
+        burst(soft, count: 4, intensity: 1.0, interval: 0.13)
+    }
+
+    /// Four light taps — final-countdown tick (each of the last 3 seconds).
+    func countdownTick() {
+        burst(light, count: 4, intensity: 1.0, interval: 0.10)
+    }
+
+    private func burst(_ gen: UIImpactFeedbackGenerator, count: Int, intensity: CGFloat, interval: TimeInterval) {
+        guard enabled else { return }
+        for i in 0..<count {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * interval) { [weak self] in
+                guard let self, self.enabled else { return }
+                gen.impactOccurred(intensity: intensity)
+                gen.prepare()
+            }
+        }
     }
 
     /// Success notification at the end of each round and the whole session.
@@ -74,6 +96,8 @@ private final class AudioManager: NSObject, AVAudioPlayerDelegate {
     private var longExhalePlayer: AVAudioPlayer?
     private var bgPlayer: AVAudioPlayer?
     var enabled = true
+    var breathVolume: Float = AudioConfig.breathVolume          // overridden from settings
+    var musicVolume: Float = AudioConfig.backgroundMusicVolume  // overridden from settings
 
     func configureSession() {
         guard enabled else { return }
@@ -90,6 +114,7 @@ private final class AudioManager: NSObject, AVAudioPlayerDelegate {
             guard let url = Bundle.main.url(forResource: phase.audioFile, withExtension: "mp3"),
                   let player = try? AVAudioPlayer(contentsOf: url) else { continue } // missing → silent
             player.enableRate = true
+            player.volume = breathVolume
             player.prepareToPlay()
             phasePlayers[phase] = player
         }
@@ -97,6 +122,7 @@ private final class AudioManager: NSObject, AVAudioPlayerDelegate {
         // Pre-stretched ~4s clip for the round-closing slow exhale.
         if let url = Bundle.main.url(forResource: "exhale_long", withExtension: "mp3"),
            let player = try? AVAudioPlayer(contentsOf: url) {
+            player.volume = breathVolume
             player.prepareToPlay()
             longExhalePlayer = player
         }
@@ -104,7 +130,7 @@ private final class AudioManager: NSObject, AVAudioPlayerDelegate {
         if let url = Bundle.main.url(forResource: AudioConfig.backgroundMusicFile, withExtension: "mp3"),
            let player = try? AVAudioPlayer(contentsOf: url) {
             player.delegate = self
-            player.volume = AudioConfig.backgroundMusicVolume
+            player.volume = musicVolume
             player.prepareToPlay()
             bgPlayer = player
         }
@@ -183,6 +209,8 @@ final class BreathEngine {
     @ObservationIgnored private var sessionStart: CFTimeInterval = 0
     @ObservationIgnored private var settings = BreathSettings()
     @ObservationIgnored private var transitionInstant = true
+    @ObservationIgnored private var holdOutMark15 = 0
+    @ObservationIgnored private var holdOutCountdownSec = Int.max
     @ObservationIgnored private var proxy: DisplayLinkProxy?
     @ObservationIgnored private let haptics = HapticManager()
     @ObservationIgnored private let audio = AudioManager()
@@ -210,6 +238,8 @@ final class BreathEngine {
         haptics.prepare()
 
         audio.enabled = s.soundEnabled
+        audio.breathVolume = Float(s.breathVolume)
+        audio.musicVolume = Float(s.musicVolume)
         audio.configureSession()
         audio.preload()
         audio.startBackgroundMusic()
@@ -267,6 +297,9 @@ final class BreathEngine {
             || (step.phase == .inhale && step.breathIndex == nil)
         transition = transitionInstant ? 1 : 0
 
+        holdOutMark15 = 0
+        holdOutCountdownSec = Int.max
+
         haptics.phaseChange()
         if step.phase == .exhale && step.breathIndex == nil {
             audio.playLongExhale(targetSec: step.duration) // round-closing slow exhale
@@ -291,7 +324,26 @@ final class BreathEngine {
         if elapsed >= step.duration {
             advance(now: now)
         } else {
+            if step.phase == .holdOut { holdOutHaptics(elapsed: elapsed, duration: step.duration) }
             updateDisplay(elapsed: elapsed, step: step)
+        }
+    }
+
+    /// Extra hold-out haptics: a light double pulse every 15 s, and a small
+    /// double pulse at 3/2/1 seconds before the hold ends.
+    private func holdOutHaptics(elapsed: Double, duration: Double) {
+        let remaining = duration - elapsed
+
+        let mark = Int(elapsed / 15)
+        if mark > holdOutMark15 && remaining > 3 {
+            holdOutMark15 = mark
+            haptics.holdMarker()
+        }
+
+        let sec = Int(ceil(remaining))
+        if sec >= 1 && sec <= 3 && sec != holdOutCountdownSec {
+            holdOutCountdownSec = sec
+            haptics.countdownTick()
         }
     }
 

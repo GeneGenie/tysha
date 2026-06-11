@@ -52,7 +52,8 @@ struct SessionView: View {
             Spacer()
 
             // Phase name + big "часики". Material backing + shadow keep it readable
-            // even on the bright inhale flash.
+            // even on the bright inhale flash. Width is fixed at 80% of the screen
+            // so the capsule doesn't jump as the text changes.
             VStack(spacing: 8) {
                 Text(engine.phase.title)
                     .font(.title2)
@@ -61,8 +62,8 @@ struct SessionView: View {
                     .font(.system(size: 76, weight: .bold, design: .rounded))
                     .monospacedDigit()
             }
-            .padding(.horizontal, 32)
             .padding(.vertical, 20)
+            .containerRelativeFrame(.horizontal) { length, _ in length * 0.8 }
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22))
             .shadow(color: .black.opacity(0.4), radius: 10)
 

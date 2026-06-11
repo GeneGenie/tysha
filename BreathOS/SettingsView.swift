@@ -45,6 +45,16 @@ struct SettingsView: View {
 
                 Section {
                     Toggle("Звук", isOn: $settings.soundEnabled)
+                    VStack(alignment: .leading, spacing: 4) {
+                        valueLabel("Громкость дыхания", "\(Int((settings.breathVolume * 100).rounded())) %")
+                        Slider(value: $settings.breathVolume, in: 0...1, step: 0.05)
+                    }
+                    .disabled(!settings.soundEnabled)
+                    VStack(alignment: .leading, spacing: 4) {
+                        valueLabel("Громкость музыки", "\(Int((settings.musicVolume * 100).rounded())) %")
+                        Slider(value: $settings.musicVolume, in: 0...1, step: 0.05)
+                    }
+                    .disabled(!settings.soundEnabled)
                     Toggle("Вибрация", isOn: $settings.hapticsEnabled)
                 }
 
@@ -63,7 +73,7 @@ struct SettingsView: View {
                     .buttonStyle(.borderedProminent)
                 }
             }
-            .navigationTitle("BreathOS")
+            .navigationTitle("BreathUpp")
         }
     }
 
