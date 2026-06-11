@@ -53,7 +53,7 @@ struct BreathSettings: Codable, Equatable {
 
     static let inhaleRange: ClosedRange<Double> = 0.5...5
     static let exhaleRange: ClosedRange<Double> = 0.5...5
-    static let breathsRange: ClosedRange<Int> = 20...40
+    static let breathsRange: ClosedRange<Int> = 3...40
     static let recoveryRange: ClosedRange<Double> = 5...30
     static let roundsRange: ClosedRange<Int> = 1...8
     static let holdOutRange: ClosedRange<Double> = 15...300
