@@ -71,6 +71,7 @@ private final class HapticManager {
 
 private final class AudioManager: NSObject, AVAudioPlayerDelegate {
     private var phasePlayers: [BreathPhase: AVAudioPlayer] = [:]
+    private var longExhalePlayer: AVAudioPlayer?
     private var bgPlayer: AVAudioPlayer?
     var enabled = true
 
@@ -88,8 +89,16 @@ private final class AudioManager: NSObject, AVAudioPlayerDelegate {
         for phase in [BreathPhase.inhale, .holdIn, .exhale, .holdOut] {
             guard let url = Bundle.main.url(forResource: phase.audioFile, withExtension: "mp3"),
                   let player = try? AVAudioPlayer(contentsOf: url) else { continue } // missing → silent
+            player.enableRate = true
             player.prepareToPlay()
             phasePlayers[phase] = player
+        }
+
+        // Pre-stretched ~4s clip for the round-closing slow exhale.
+        if let url = Bundle.main.url(forResource: "exhale_long", withExtension: "mp3"),
+           let player = try? AVAudioPlayer(contentsOf: url) {
+            player.prepareToPlay()
+            longExhalePlayer = player
         }
 
         if let url = Bundle.main.url(forResource: AudioConfig.backgroundMusicFile, withExtension: "mp3"),
@@ -109,12 +118,28 @@ private final class AudioManager: NSObject, AVAudioPlayerDelegate {
 
     func play(_ phase: BreathPhase) {
         guard enabled, let player = phasePlayers[phase] else { return }
+        player.rate = 1.0
         player.currentTime = 0
         player.play()
     }
 
+    /// Round-closing slow exhale: dedicated pre-stretched clip if bundled,
+    /// otherwise the normal exhale slowed down (AVAudioPlayer rate floor is 0.5).
+    func playLongExhale(targetSec: Double) {
+        guard enabled else { return }
+        if let player = longExhalePlayer {
+            player.currentTime = 0
+            player.play()
+        } else if let player = phasePlayers[.exhale], player.duration > 0, targetSec > 0 {
+            player.rate = Float(min(2.0, max(0.5, player.duration / targetSec)))
+            player.currentTime = 0
+            player.play()
+        }
+    }
+
     func stopAll() {
         bgPlayer?.stop()
+        longExhalePlayer?.stop()
         phasePlayers.values.forEach { $0.stop() }
         try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
     }
@@ -137,7 +162,8 @@ private final class AudioManager: NSObject, AVAudioPlayerDelegate {
 final class BreathEngine {
     // Observed state consumed by the views and the shader.
     private(set) var phase: BreathPhase = .inhale
-    private(set) var prevPhase: BreathPhase = .inhale
+    private(set) var shaderPhase: Int = BreathPhase.exhale.shaderIndex      // visual, not 1:1 with `phase`
+    private(set) var shaderPrevPhase: Int = BreathPhase.exhale.shaderIndex
     private(set) var phaseProgress: Double = 0      // 0...1 within the current phase
     private(set) var transition: Double = 1         // 0...1 crossfade ramp into the current phase
     private(set) var secondsText: String = ""
@@ -156,6 +182,7 @@ final class BreathEngine {
     @ObservationIgnored private var stepStart: CFTimeInterval = 0
     @ObservationIgnored private var sessionStart: CFTimeInterval = 0
     @ObservationIgnored private var settings = BreathSettings()
+    @ObservationIgnored private var transitionInstant = true
     @ObservationIgnored private var proxy: DisplayLinkProxy?
     @ObservationIgnored private let haptics = HapticManager()
     @ObservationIgnored private let audio = AudioManager()
@@ -213,19 +240,39 @@ final class BreathEngine {
 
     // MARK: Stepping
 
+    /// Visual (shader) phase for a step. The whole breath series keeps one steady
+    /// fractal background — no per-breath flash/switching; the flash is reserved
+    /// for the recovery inhale after the long hold.
+    private static func shaderIndex(for step: PhaseStep) -> Int {
+        if step.breathIndex != nil { return BreathPhase.exhale.shaderIndex }
+        return step.phase.shaderIndex
+    }
+
     private func beginStep(at i: Int, now: CFTimeInterval, isFirst: Bool) {
         let step = queue[i]
-        prevPhase = isFirst ? step.phase : phase
         phase = step.phase
         stepStart = now
         currentRound = step.round
         if let b = step.breathIndex { breathIndex = b }
         isBreathSeries = (step.breathIndex != nil)
-        // Inhale flash is intentionally sharp (no crossfade); other phases ease in.
-        transition = (step.phase == .inhale) ? 1 : 0
+
+        let newIdx = Self.shaderIndex(for: step)
+        shaderPrevPhase = isFirst ? newIdx : shaderPhase
+        shaderPhase = newIdx
+        // No crossfade when the visual doesn't change, for the sharp recovery
+        // flash, and for the hold-out blackout (its darkening starts immediately;
+        // its base fractal continues the exhale one seamlessly).
+        transitionInstant = (newIdx == shaderPrevPhase)
+            || step.phase == .holdOut
+            || (step.phase == .inhale && step.breathIndex == nil)
+        transition = transitionInstant ? 1 : 0
 
         haptics.phaseChange()
-        audio.play(step.phase)
+        if step.phase == .exhale && step.breathIndex == nil {
+            audio.playLongExhale(targetSec: step.duration) // round-closing slow exhale
+        } else {
+            audio.play(step.phase)
+        }
         if step.phase == .holdOut { haptics.softPulse() } // start of the long hold
 
         updateDisplay(elapsed: 0, step: step)
@@ -239,7 +286,7 @@ final class BreathEngine {
         let step = queue[index]
         let elapsed = now - stepStart
 
-        transition = (step.phase == .inhale) ? 1 : min(1, elapsed / Self.crossfadeSec)
+        transition = transitionInstant ? 1 : min(1, elapsed / Self.crossfadeSec)
 
         if elapsed >= step.duration {
             advance(now: now)

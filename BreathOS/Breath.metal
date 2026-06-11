@@ -69,10 +69,11 @@ static float3 renderFractal(float2 fuv, float t, float driftScale) {
     return bluePalette(f);
 }
 
-// Inhale: sharp bright flash from the center, radius grows over the first ~30%.
-static float3 renderFlash(float2 c, float progress) {
-    float dist = length(c);
-    float maxR = 0.85;
+// Inhale (recovery): sharp bright flash from the center, radius grows over the
+// first ~30% of the phase, then holds. `cn` is normalized so 1.0 = screen corner.
+static float3 renderFlash(float2 cn, float progress) {
+    float dist = length(cn);
+    float maxR = 1.05;
     float radius = max(mix(0.0, maxR, smoothstep(0.0, 0.3, progress)), 0.0001);
     float bright = 1.0 - smoothstep(radius * 0.15, radius, dist);
     float3 base  = float3(0.02, 0.03, 0.05);
@@ -80,23 +81,31 @@ static float3 renderFlash(float2 c, float progress) {
     return mix(base, flash, clamp(bright, 0.0, 1.0));
 }
 
-// Hold-out: light center, darkening from the edges inward as progress -> 1.
-static float3 renderVignetteClose(float2 c, float progress) {
-    float dist = length(c);
-    float maxR = 0.85;
-    float threshold = mix(maxR, 0.02, clamp(progress, 0.0, 1.0)); // light radius shrinks
-    float feather = 0.20;
-    float light = 1.0 - smoothstep(threshold - feather, threshold, dist);
-    float3 lightCol = float3(0.92, 0.95, 1.0);
-    float3 darkCol  = float3(0.01, 0.015, 0.03);
-    return mix(darkCol, lightCol, clamp(light, 0.0, 1.0));
+// Hold-out: black procedural waves close in from all sides over the continuing
+// fractal. The wavy boundary is FBM-modulated and advected toward the center;
+// darkening is visible immediately at progress 0 (thin churning rim) and leaves
+// only a small lit spot in the middle at progress 1.
+static float3 renderHoldOut(float2 fuv, float2 cn, float t, float progress) {
+    // Same drift speed as the exhale fractal -> seamless, instant phase entry.
+    float3 base = renderFractal(fuv, t, 1.0);
+
+    float dist = length(cn);
+    float2 dir = cn / max(dist, 1e-3);
+    // Sampling point slides outward along the radial direction, so the dark
+    // pattern appears to crawl inward from every edge.
+    float n = fbm(cn * 3.5 + dir * t * 0.45);
+    float wave = (n - 0.5) * 0.35;
+
+    float lightR = mix(1.02, 0.06, clamp(progress, 0.0, 1.0)); // light radius shrinks
+    float light = 1.0 - smoothstep(lightR - 0.22 + wave, lightR + wave, dist);
+    return base * clamp(light, 0.0, 1.0);
 }
 
-static float3 renderPhase(int phase, float2 fuv, float2 c, float t, float progress) {
-    if (phase == 0)      return renderFlash(c, progress);          // inhale
-    else if (phase == 2) return renderFractal(fuv, t, 1.0);        // exhale
-    else if (phase == 1) return renderFractal(fuv, t, 0.2);        // hold-in (slow drift)
-    else                 return renderVignetteClose(c, progress);  // hold-out
+static float3 renderPhase(int phase, float2 fuv, float2 cn, float t, float progress) {
+    if (phase == 0)      return renderFlash(cn, progress);            // recovery inhale
+    else if (phase == 2) return renderFractal(fuv, t, 1.0);           // exhale / breath series
+    else if (phase == 1) return renderFractal(fuv, t, 0.2);           // hold-in (slow drift)
+    else                 return renderHoldOut(fuv, cn, t, progress);  // hold-out (black waves)
 }
 
 // ----- entry point -----------------------------------------------------------
@@ -108,8 +117,11 @@ half4 breathBackground(float2 pos, half4 color,
                        float2 resolution) {
     float2 uv = pos / resolution;
     float aspect = resolution.x / max(resolution.y, 1.0);
-    float2 fuv = float2(uv.x * aspect, uv.y);              // aspect-correct field coords
+    float2 fuv = float2(uv.x * aspect, uv.y);               // aspect-correct field coords
     float2 c   = float2((uv.x - 0.5) * aspect, uv.y - 0.5); // centered radial coords
+    // Normalize so length(cn) == 1.0 exactly at the screen corners — radial
+    // effects (flash, closing waves) then span the visible screen 0...1.
+    float2 cn  = c / max(length(float2(0.5 * aspect, 0.5)), 1e-3);
 
     int curP = int(phase + 0.5);
     int prvP = int(prevPhase + 0.5);
@@ -117,11 +129,11 @@ half4 breathBackground(float2 pos, half4 color,
     float3 col;
     if (transition < 0.999) {
         // Crossfade from the previous phase (frozen at its end) into the current one.
-        float3 a = renderPhase(prvP, fuv, c, time, 1.0);
-        float3 b = renderPhase(curP, fuv, c, time, progress);
+        float3 a = renderPhase(prvP, fuv, cn, time, 1.0);
+        float3 b = renderPhase(curP, fuv, cn, time, progress);
         col = mix(a, b, clamp(transition, 0.0, 1.0));
     } else {
-        col = renderPhase(curP, fuv, c, time, progress);
+        col = renderPhase(curP, fuv, cn, time, progress);
     }
 
     return half4(half3(col), 1.0h);

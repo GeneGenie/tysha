@@ -60,6 +60,9 @@ struct BreathSettings: Codable, Equatable {
     static let holdOutStep: Double = 5
     static let defaultHoldOut: [Double] = [60, 90, 120, 150, 180]
 
+    /// Long slow exhale that closes each round (after the recovery inhale-hold).
+    static let finalExhaleSec: Double = 4.0
+
     /// Persistent warning text, shown on both screens (spec requirement).
     static let warning = "Выполняйте лёжа. Не в воде, не за рулём, не в одиночку в первый раз. При сжатии в груди, потемнении в глазах или онемении — немедленно прекратите."
 
@@ -146,6 +149,8 @@ extension BreathSettings {
             // 3. Recovery inhale, then hold on the inhale.
             append(.inhale, s.inhaleSec, round: r)
             append(.holdIn, s.recoveryHoldSec, round: r)
+            // 4. Long slow exhale closes the round.
+            append(.exhale, BreathSettings.finalExhaleSec, round: r)
         }
         return steps
     }

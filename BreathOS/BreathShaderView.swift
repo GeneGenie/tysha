@@ -14,8 +14,8 @@ struct BreathShaderView: View {
                     .colorEffect(
                         ShaderLibrary.breathBackground(
                             .float(Float(engine.shaderTime)),
-                            .float(Float(engine.phase.shaderIndex)),
-                            .float(Float(engine.prevPhase.shaderIndex)),
+                            .float(Float(engine.shaderPhase)),
+                            .float(Float(engine.shaderPrevPhase)),
                             .float(Float(engine.phaseProgress)),
                             .float(Float(engine.transition)),
                             .float2(Float(size.width), Float(size.height))
