@@ -1,0 +1,32 @@
+/* Phases */
+"phase.inhale" = "Inhale";
+"phase.holdIn" = "Hold (full)";
+"phase.exhale" = "Exhale";
+"phase.holdOut" = "Hold (empty)";
+
+/* Safety warning (shown on both screens) */
+"warning" = "Do it sitting. Not in water, not while driving, not alone the first time. If you feel chest tightness, darkening vision, or numbness — stop immediately.";
+
+/* Settings */
+"settings.section.breathing" = "Breathing";
+"settings.inhale" = "Inhale (series)";
+"settings.exhale" = "Exhale (series)";
+"settings.breathsPerRound" = "Breaths per round";
+"settings.recoveryHold" = "Recovery hold (in)";
+"settings.section.rounds" = "Rounds";
+"settings.rounds" = "Number of rounds";
+"settings.section.holdOut" = "Exhale holds per round";
+"settings.round" = "Round";
+"settings.sound" = "Sound";
+"settings.breathVolume" = "Breathing volume";
+"settings.musicVolume" = "Music volume";
+"settings.haptics" = "Vibration";
+"settings.start" = "Start";
+"unit.seconds" = "s";
+
+/* Session */
+"session.round" = "Round";
+"session.breath" = "Breath";
+"session.exit" = "Exit";
+"session.done" = "Done";
+"session.again" = "Again";

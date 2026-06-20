@@ -23,13 +23,13 @@ enum BreathPhase: Int, Codable {
         }
     }
 
-    /// Russian label shown on the session screen.
+    /// Localized label shown on the session screen.
     var title: String {
         switch self {
-        case .inhale:  return "Вдох"
-        case .holdIn:  return "Задержка на вдохе"
-        case .exhale:  return "Выдох"
-        case .holdOut: return "Задержка на выдохе"
+        case .inhale:  return L("phase.inhale")
+        case .holdIn:  return L("phase.holdIn")
+        case .exhale:  return L("phase.exhale")
+        case .holdOut: return L("phase.holdOut")
         }
     }
 
@@ -74,7 +74,7 @@ struct BreathSettings: Codable, Equatable {
 
     static let inhaleRange: ClosedRange<Double> = 0.5...5
     static let exhaleRange: ClosedRange<Double> = 0.5...5
-    static let breathsRange: ClosedRange<Int> = 3...40
+    static let breathsRange: ClosedRange<Int> = 15...40
     static let recoveryRange: ClosedRange<Double> = 5...30
     static let roundsRange: ClosedRange<Int> = 1...8
     static let holdOutRange: ClosedRange<Double> = 15...300
@@ -84,8 +84,8 @@ struct BreathSettings: Codable, Equatable {
     /// Long slow exhale that closes each round (after the recovery inhale-hold).
     static let finalExhaleSec: Double = 4.0
 
-    /// Persistent warning text, shown on both screens (spec requirement).
-    static let warning = "Выполняйте лёжа. Не в воде, не за рулём, не в одиночку в первый раз. При сжатии в груди, потемнении в глазах или онемении — немедленно прекратите."
+    /// Persistent warning text, shown on both screens (spec requirement). Localized.
+    static var warning: String { L("warning") }
 
     // MARK: Persistence
 

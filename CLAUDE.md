@@ -1,8 +1,10 @@
-# BreathUpp (internal name: BreathOS)
+# Тиша (internal name: BreathOS)
 
 iOS 17+ SwiftUI + Metal breathing app (Wim Hof style). Russian UI, dark theme,
 local device install only. Full spec: `BreathOS_TЗ.md`. Display name is
-**BreathUpp**; the Xcode target/folder stay `BreathOS` — don't rename them.
+**Тиша**; the Xcode target/folder stay `BreathOS` — don't rename them.
+
+UI is localized via `<lang>.lproj/Localizable.strings` (**uk** = default/dev region, **ru**, **en**), looked up through the `L("key")` helper in `Localization.swift`. Language follows the device. App display name is a single brand "Тиша" (not localized). When adding UI text: add the key to all three `.strings` files. Standalone model test now needs `Localization.swift` too: `swiftc BreathModels.swift AudioConfig.swift Localization.swift <test>.swift`.
 
 ## Build & verify
 

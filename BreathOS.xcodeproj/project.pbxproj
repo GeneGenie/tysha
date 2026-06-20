@@ -11,6 +11,7 @@
 		CC0000000000000000000002 /* BreathModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000002 /* BreathModels.swift */; };
 		CC0000000000000000000003 /* BreathEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000003 /* BreathEngine.swift */; };
 		CC0000000000000000000004 /* AudioConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000004 /* AudioConfig.swift */; };
+		CC0000000000000000000010 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000014 /* Localization.swift */; };
 		CC0000000000000000000005 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000005 /* SettingsView.swift */; };
 		CC0000000000000000000006 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000006 /* SessionView.swift */; };
 		CC0000000000000000000007 /* BreathShaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000007 /* BreathShaderView.swift */; };
@@ -20,6 +21,8 @@
 		CC000000000000000000000B /* exhale.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB000000000000000000000B /* exhale.mp3 */; };
 		CC000000000000000000000C /* bg_music_start_from_45sec.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB000000000000000000000C /* bg_music_start_from_45sec.mp3 */; };
 		CC000000000000000000000D /* exhale_long.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BB000000000000000000000D /* exhale_long.mp3 */; };
+		CC000000000000000000000E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BB000000000000000000000F /* PrivacyInfo.xcprivacy */; };
+		CC000000000000000000000F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000010 /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +31,7 @@
 		BB0000000000000000000002 /* BreathModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathModels.swift; sourceTree = "<group>"; };
 		BB0000000000000000000003 /* BreathEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathEngine.swift; sourceTree = "<group>"; };
 		BB0000000000000000000004 /* AudioConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioConfig.swift; sourceTree = "<group>"; };
+		BB0000000000000000000014 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
 		BB0000000000000000000005 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		BB0000000000000000000006 /* SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionView.swift; sourceTree = "<group>"; };
 		BB0000000000000000000007 /* BreathShaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathShaderView.swift; sourceTree = "<group>"; };
@@ -38,6 +42,10 @@
 		BB000000000000000000000C /* bg_music_start_from_45sec.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bg_music_start_from_45sec.mp3; sourceTree = "<group>"; };
 		BB000000000000000000000D /* exhale_long.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = exhale_long.mp3; sourceTree = "<group>"; };
 		BB000000000000000000000E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB000000000000000000000F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		BB0000000000000000000011 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		BB0000000000000000000012 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		BB0000000000000000000013 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,12 +82,15 @@
 				BB0000000000000000000002 /* BreathModels.swift */,
 				BB0000000000000000000003 /* BreathEngine.swift */,
 				BB0000000000000000000004 /* AudioConfig.swift */,
+				BB0000000000000000000014 /* Localization.swift */,
 				BB0000000000000000000005 /* SettingsView.swift */,
 				BB0000000000000000000006 /* SessionView.swift */,
 				BB0000000000000000000007 /* BreathShaderView.swift */,
 				BB0000000000000000000008 /* Breath.metal */,
 				BB0000000000000000000009 /* Assets.xcassets */,
 				BB000000000000000000000E /* Info.plist */,
+				BB000000000000000000000F /* PrivacyInfo.xcprivacy */,
+				BB0000000000000000000010 /* Localizable.strings */,
 				AA0000000000000000000005 /* Resources */,
 			);
 			path = BreathOS;
@@ -133,12 +144,13 @@
 			};
 			buildConfigurationList = AA000000000000000000000B /* Build configuration list for PBXProject "BreathOS" */;
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = uk;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 				ru,
+				uk,
 			);
 			mainGroup = AA0000000000000000000002;
 			productRefGroup = AA0000000000000000000003 /* Products */;
@@ -160,6 +172,8 @@
 				CC000000000000000000000B /* exhale.mp3 in Resources */,
 				CC000000000000000000000D /* exhale_long.mp3 in Resources */,
 				CC000000000000000000000C /* bg_music_start_from_45sec.mp3 in Resources */,
+				CC000000000000000000000E /* PrivacyInfo.xcprivacy in Resources */,
+				CC000000000000000000000F /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +187,7 @@
 				CC0000000000000000000002 /* BreathModels.swift in Sources */,
 				CC0000000000000000000003 /* BreathEngine.swift in Sources */,
 				CC0000000000000000000004 /* AudioConfig.swift in Sources */,
+				CC0000000000000000000010 /* Localization.swift in Sources */,
 				CC0000000000000000000005 /* SettingsView.swift in Sources */,
 				CC0000000000000000000006 /* SessionView.swift in Sources */,
 				CC0000000000000000000007 /* BreathShaderView.swift in Sources */,
@@ -182,6 +197,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		BB0000000000000000000010 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BB0000000000000000000011 /* en */,
+				BB0000000000000000000012 /* ru */,
+				BB0000000000000000000013 /* uk */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		AA000000000000000000000C /* Debug */ = {
@@ -314,7 +342,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BreathOS/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = BreathUpp;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -322,8 +349,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.breathos.demo;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.metamanafamily.silencio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -342,7 +369,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BreathOS/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = BreathUpp;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -350,8 +376,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.breathos.demo;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.metamanafamily.silencio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

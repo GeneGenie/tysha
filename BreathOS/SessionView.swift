@@ -28,10 +28,10 @@ struct SessionView: View {
         VStack {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Раунд \(max(1, engine.currentRound))/\(engine.totalRounds)")
+                    Text(verbatim: "\(L("session.round")) \(max(1, engine.currentRound))/\(engine.totalRounds)")
                         .font(.headline)
                     if engine.isBreathSeries {
-                        Text("Дыхание \(engine.breathIndex)/\(engine.breathsPerRound)")
+                        Text(verbatim: "\(L("session.breath")) \(engine.breathIndex)/\(engine.breathsPerRound)")
                             .font(.subheadline)
                     }
                 }
@@ -41,7 +41,7 @@ struct SessionView: View {
                 Spacer()
 
                 Button(action: onExit) {
-                    Text("Выход")
+                    Text(L("session.exit"))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
                 }
@@ -85,19 +85,19 @@ struct SessionView: View {
 
     private var finishedOverlay: some View {
         VStack(spacing: 24) {
-            Text("Готово")
+            Text(L("session.done"))
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
             Button(action: { engine.restart() }) {
-                Text("Ещё раз")
+                Text(L("session.again"))
                     .fontWeight(.semibold)
                     .frame(maxWidth: 220)
                     .padding(.vertical, 6)
             }
             .buttonStyle(.borderedProminent)
 
-            Button("Выход", action: onExit)
+            Button(L("session.exit"), action: onExit)
                 .buttonStyle(.bordered)
         }
         .foregroundStyle(.white)

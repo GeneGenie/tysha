@@ -1,0 +1,32 @@
+/* Phases */
+"phase.inhale" = "Вдох";
+"phase.holdIn" = "Задержка на вдохе";
+"phase.exhale" = "Выдох";
+"phase.holdOut" = "Задержка на выдохе";
+
+/* Safety warning (shown on both screens) */
+"warning" = "Выполняйте сидя. Не в воде, не за рулём, не в одиночку в первый раз. При сжатии в груди, потемнении в глазах или онемении — немедленно прекратите.";
+
+/* Settings */
+"settings.section.breathing" = "Дыхание";
+"settings.inhale" = "Вдох (серия)";
+"settings.exhale" = "Выдох (серия)";
+"settings.breathsPerRound" = "Дыханий в раунде";
+"settings.recoveryHold" = "Восстановительная задержка на вдохе";
+"settings.section.rounds" = "Раунды";
+"settings.rounds" = "Количество раундов";
+"settings.section.holdOut" = "Задержки на выдохе по раундам";
+"settings.round" = "Раунд";
+"settings.sound" = "Звук";
+"settings.breathVolume" = "Громкость дыхания";
+"settings.musicVolume" = "Громкость музыки";
+"settings.haptics" = "Вибрация";
+"settings.start" = "Начать";
+"unit.seconds" = "с";
+
+/* Session */
+"session.round" = "Раунд";
+"session.breath" = "Дыхание";
+"session.exit" = "Выход";
+"session.done" = "Готово";
+"session.again" = "Ещё раз";
