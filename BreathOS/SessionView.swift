@@ -24,19 +24,30 @@ struct SessionView: View {
 
     // MARK: Running overlay
 
+    /// White breathing field scale: grows on inhale, shrinks on exhale during the
+    /// breath series (continuous across phase boundaries: 0.7 ↔ 1.4).
+    private var breathFieldScale: CGFloat {
+        guard engine.isBreathSeries else { return 0.7 }
+        switch engine.phase {
+        case .inhale: return 0.7 + 0.7 * CGFloat(engine.phaseProgress)
+        case .exhale: return 1.4 - 0.7 * CGFloat(engine.phaseProgress)
+        default:      return 0.7
+        }
+    }
+
     private var sessionOverlay: some View {
         VStack {
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(verbatim: "\(L("session.round")) \(max(1, engine.currentRound))/\(engine.totalRounds)")
-                        .font(.headline)
+                        .font(.system(size: 26, weight: .semibold))
                     if engine.isBreathSeries {
                         Text(verbatim: "\(L("session.breath")) \(engine.breathIndex)/\(engine.breathsPerRound)")
-                            .font(.subheadline)
+                            .font(.system(size: 22))
                     }
                 }
-                .padding(10)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                .padding(16)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
 
                 Spacer()
 
@@ -51,21 +62,31 @@ struct SessionView: View {
 
             Spacer()
 
-            // Phase name + big "часики". Material backing + shadow keep it readable
-            // even on the bright inhale flash. Width is fixed at 80% of the screen
-            // so the capsule doesn't jump as the text changes.
-            VStack(spacing: 8) {
-                Text(engine.phase.title)
-                    .font(.title2)
-                    .fontWeight(.medium)
-                Text(engine.secondsText)
-                    .font(.system(size: 76, weight: .bold, design: .rounded))
-                    .monospacedDigit()
+            // Phase name + big "часики". Behind it, a soft white field breathes with the
+            // session — expanding on inhale, contracting on exhale (during the series).
+            ZStack {
+                Circle()
+                    .fill(.white.opacity(0.18))
+                    .frame(width: 240, height: 240)
+                    .scaleEffect(breathFieldScale)
+                    .blur(radius: 6)
+                    .opacity(engine.isBreathSeries ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.3), value: engine.isBreathSeries)
+                    .allowsHitTesting(false)
+
+                VStack(spacing: 8) {
+                    Text(engine.phase.title)
+                        .font(.title2)
+                        .fontWeight(.medium)
+                    Text(engine.secondsText)
+                        .font(.system(size: 76, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                }
+                .padding(.vertical, 20)
+                .containerRelativeFrame(.horizontal) { length, _ in length * 0.8 }
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22))
+                .shadow(color: .black.opacity(0.4), radius: 10)
             }
-            .padding(.vertical, 20)
-            .containerRelativeFrame(.horizontal) { length, _ in length * 0.8 }
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22))
-            .shadow(color: .black.opacity(0.4), radius: 10)
 
             Spacer()
 
