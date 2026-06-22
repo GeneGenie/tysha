@@ -70,6 +70,12 @@ private final class HapticManager {
         burst(light, count: 4, intensity: 1.0, interval: 0.10)
     }
 
+    /// Last 3 breaths before hold-out: n micro-vibes (3, 2, 1) so the user
+    /// knows to load up on oxygen without opening their eyes.
+    func breathCountdown(_ n: Int) {
+        burst(light, count: n, intensity: 1.0, interval: 0.12)
+    }
+
     private func burst(_ gen: UIImpactFeedbackGenerator, count: Int, intensity: CGFloat, interval: TimeInterval) {
         guard enabled else { return }
         for i in 0..<count {
@@ -301,6 +307,13 @@ final class BreathEngine {
         holdOutCountdownSec = Int.max
 
         haptics.phaseChange()
+
+        // Last 3 inhales before hold-out: 3, 2, 1 micro-vibes
+        if step.phase == .inhale, let b = step.breathIndex {
+            let remaining = settings.breathsPerRound - b
+            if remaining < 3 { haptics.breathCountdown(3 - remaining) }
+        }
+
         if step.phase == .exhale && step.breathIndex == nil {
             audio.playLongExhale(targetSec: step.duration) // round-closing slow exhale
         } else {
@@ -381,8 +394,9 @@ final class BreathEngine {
         phaseProgress = min(1, max(0, elapsed / duration))
 
         if step.phase.countsUp {
-            // Long exhale hold: count up mm:ss from 00:00.
-            secondsText = Self.mmss(elapsed)
+            // Long exhale hold: countdown mm:ss.
+            let remaining = max(0, step.duration - elapsed)
+            secondsText = Self.mmss(remaining)
         } else {
             // Everything else: integer countdown to the end of the phase.
             let remaining = max(0, ceil(step.duration - elapsed))
